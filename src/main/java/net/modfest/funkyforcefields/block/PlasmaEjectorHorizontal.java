@@ -1,4 +1,4 @@
-package net.modfest.funkyforcefields.blocks;
+package net.modfest.funkyforcefields.block;
 
 import net.modfest.funkyforcefields.FunkyForcefields;
 import net.modfest.funkyforcefields.regions.ForcefieldRegion;

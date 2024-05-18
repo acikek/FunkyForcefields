@@ -1,4 +1,4 @@
-package net.modfest.funkyforcefields.blocks;
+package net.modfest.funkyforcefields.block;
 
 import net.modfest.funkyforcefields.regions.ForcefieldFluid;
 import net.fabricmc.api.EnvType;

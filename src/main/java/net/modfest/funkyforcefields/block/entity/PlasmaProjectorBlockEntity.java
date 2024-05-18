@@ -1,4 +1,4 @@
-package net.modfest.funkyforcefields.blocks;
+package net.modfest.funkyforcefields.block.entity;
 
 import net.modfest.funkyforcefields.FunkyForcefields;
 import net.minecraft.block.entity.BlockEntity;

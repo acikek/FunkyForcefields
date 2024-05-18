@@ -1,4 +1,4 @@
-package net.modfest.funkyforcefields.items;
+package net.modfest.funkyforcefields.item;
 
 import net.modfest.funkyforcefields.regions.ForcefieldFluid;
 import net.modfest.funkyforcefields.transport.FluidContainerComponent;

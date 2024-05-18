@@ -1,4 +1,4 @@
-package net.modfest.funkyforcefields.blocks;
+package net.modfest.funkyforcefields.client.render;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -11,6 +11,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
+import net.modfest.funkyforcefields.block.entity.PlasmaProjectorBlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;

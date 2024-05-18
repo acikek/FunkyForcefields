@@ -1,6 +1,6 @@
 package net.modfest.funkyforcefields.regions;
 
-import net.modfest.funkyforcefields.blocks.ForcefieldBlocks;
+import net.modfest.funkyforcefields.block.ForcefieldBlocks;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;

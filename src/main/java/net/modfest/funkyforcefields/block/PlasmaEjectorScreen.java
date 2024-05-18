@@ -1,4 +1,4 @@
-package net.modfest.funkyforcefields.blocks;
+package net.modfest.funkyforcefields.block;
 
 import io.github.cottonmc.cotton.gui.client.CottonInventoryScreen;
 import net.minecraft.entity.player.PlayerEntity;

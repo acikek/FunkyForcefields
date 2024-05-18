@@ -1,4 +1,4 @@
-package net.modfest.funkyforcefields.blocks;
+package net.modfest.funkyforcefields.block;
 
 import net.modfest.funkyforcefields.regions.ForcefieldFluid;
 import net.modfest.funkyforcefields.regions.ForcefieldRegion;
@@ -11,15 +11,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -27,51 +20,19 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class ForcefieldBlockVertical extends ForcefieldBlock {
-	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+public class ForcefieldBlockHorizontal extends ForcefieldBlock {
 	private final ForcefieldFluid fluid;
 
-	public ForcefieldBlockVertical(ForcefieldFluid fluid) {
+	public ForcefieldBlockHorizontal(ForcefieldFluid fluid) {
 		super(FabricBlockSettings.of(Material.BARRIER).nonOpaque().strength(-1.0F, 3600000.0F).dropsNothing().build());
-		setDefaultState(this.stateManager.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH));
 		this.fluid = fluid;
 	}
 
-	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		return state.with(FACING, rotation.rotate(state.get(FACING)));
-	}
-
-	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
-		return state.rotate(mirror.getRotation(state.get(FACING)));
-	}
-
-	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> stateManager) {
-		stateManager.add(Properties.HORIZONTAL_FACING);
-	}
-
-	private static final VoxelShape NS = VoxelShapes.cuboid(0.495f, 0f, 0f, 0.505f, 1f, 1f);
-	private static final VoxelShape EW = VoxelShapes.cuboid(0f, 0f, 0.495f, 1f, 1f, 0.505f);
+	private static final VoxelShape SHAPE = VoxelShapes.cuboid(0f, 0.990f, 0f, 1f, 1f, 1f);
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		Direction dir = state.get(FACING);
-		switch (dir) {
-			case NORTH:
-			case SOUTH:
-				return NS;
-			case EAST:
-			case WEST:
-				return EW;
-			default:
-				return VoxelShapes.fullCube();
-		}
-	}
-
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(FACING, ctx.getPlayerFacing());
+		return SHAPE;
 	}
 
 	@Override

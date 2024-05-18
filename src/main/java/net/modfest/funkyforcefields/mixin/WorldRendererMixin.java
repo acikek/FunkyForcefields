@@ -1,6 +1,6 @@
 package net.modfest.funkyforcefields.mixin;
 
-import net.modfest.funkyforcefields.blocks.ForcefieldBlock;
+import net.modfest.funkyforcefields.block.ForcefieldBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;

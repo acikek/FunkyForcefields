@@ -1,9 +1,10 @@
-package net.modfest.funkyforcefields;
+package net.modfest.funkyforcefields.client;
 
-import net.modfest.funkyforcefields.blocks.ForcefieldBlocks;
-import net.modfest.funkyforcefields.blocks.PlasmaEjectorController;
-import net.modfest.funkyforcefields.blocks.PlasmaEjectorScreen;
-import net.modfest.funkyforcefields.blocks.PlasmaProjectorBlockEntityRenderer;
+import net.modfest.funkyforcefields.FunkyForcefields;
+import net.modfest.funkyforcefields.block.ForcefieldBlocks;
+import net.modfest.funkyforcefields.block.PlasmaEjectorController;
+import net.modfest.funkyforcefields.block.PlasmaEjectorScreen;
+import net.modfest.funkyforcefields.client.render.PlasmaProjectorBlockEntityRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

@@ -3,11 +3,11 @@
 	"package": "link.infra.funkyforcefields.mixin",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
-		"EntityContextImplMixin",
-		"MobEntityMixin"
+		"net.modfest.funkyforcefields.mixin.EntityContextImplMixin",
+		"net.modfest.funkyforcefields.mixin.MobEntityMixin"
 	],
 	"client": [
-		"WorldRendererMixin"
+		"net.modfest.funkyforcefields.mixin.WorldRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

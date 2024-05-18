@@ -1,10 +1,10 @@
 package net.modfest.funkyforcefields.regions;
 
 import javax.annotation.Nullable;
-import net.modfest.funkyforcefields.blocks.ForcefieldBlock;
-import net.modfest.funkyforcefields.blocks.ForcefieldBlockHorizontal;
-import net.modfest.funkyforcefields.blocks.ForcefieldBlockVertical;
-import net.modfest.funkyforcefields.blocks.ForcefieldBlocks;
+import net.modfest.funkyforcefields.block.ForcefieldBlock;
+import net.modfest.funkyforcefields.block.ForcefieldBlockHorizontal;
+import net.modfest.funkyforcefields.block.ForcefieldBlockVertical;
+import net.modfest.funkyforcefields.block.ForcefieldBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;

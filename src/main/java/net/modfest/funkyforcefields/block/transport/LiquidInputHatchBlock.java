@@ -1,4 +1,4 @@
-package net.modfest.funkyforcefields.blocks.transport;
+package net.modfest.funkyforcefields.block.transport;
 
 import nerdhub.cardinal.components.api.ComponentType;
 import nerdhub.cardinal.components.api.component.BlockComponentProvider;
@@ -14,6 +14,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.modfest.funkyforcefields.block.entity.LiquidInputHatchBlockEntity;
 
 import java.util.Collections;
 import java.util.Set;

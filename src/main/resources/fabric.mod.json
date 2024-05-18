@@ -16,10 +16,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"link.infra.funkyforcefields.FunkyForcefields"
+			"net.modfest.funkyforcefields.FunkyForcefields"
 		],
 		"client": [
-			"link.infra.funkyforcefields.FunkyForcefieldsClient"
+			"net.modfest.funkyforcefields.client.FunkyForcefieldsClient"
 		]
 	},
 	"depends": {

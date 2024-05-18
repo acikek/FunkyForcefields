@@ -1,5 +1,6 @@
-package net.modfest.funkyforcefields.blocks.transport;
+package net.modfest.funkyforcefields.block.transport;
 
+import net.modfest.funkyforcefields.block.entity.PipeBlockEntity;
 import net.modfest.funkyforcefields.transport.FluidContainerComponent;
 import net.modfest.funkyforcefields.transport.PipeConnection;
 import nerdhub.cardinal.components.api.ComponentType;
