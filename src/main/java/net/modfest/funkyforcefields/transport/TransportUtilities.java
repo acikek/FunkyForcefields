@@ -1,7 +1,9 @@
 package net.modfest.funkyforcefields.transport;
 
 public class TransportUtilities {
-	private TransportUtilities() {}
+
+	private TransportUtilities() {
+	}
 
 	public static float NOMINAL_PRESSURE = 200;
 	public static float NOMINAL_TEMPERATURE = 290;
@@ -32,7 +34,8 @@ public class TransportUtilities {
 			float volRate;
 			if (volume == 0) {
 				volRate = 1;
-			} else {
+			}
+			else {
 				volRate = (float) (10 * Math.pow(volume, -2));
 				if (volRate > 1) {
 					volRate = 1;

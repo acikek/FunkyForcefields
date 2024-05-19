@@ -1,82 +1,64 @@
 package net.modfest.funkyforcefields.item;
 
-import net.modfest.funkyforcefields.regions.ForcefieldFluid;
-import net.modfest.funkyforcefields.transport.FluidContainerComponent;
-import nerdhub.cardinal.components.api.component.BlockComponentProvider;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import net.modfest.funkyforcefields.regions.ForcefieldFluid;
+import net.modfest.funkyforcefields.transport.FluidContainer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GaugeItem extends Item {
+
 	public GaugeItem(Settings settings) {
 		super(settings);
 	}
 
-	private static List<Direction> findValidDirections(BlockComponentProvider provider, BlockView world, BlockPos pos) {
-		List<Direction> dirs = new ArrayList<>();
-		for (Direction dir : Direction.values()) {
-			if (provider.hasComponent(world, pos, FluidContainerComponent.TYPE, dir)) {
-				dirs.add(dir);
+	private static Multimap<FluidContainer, Direction> findValidDirections(World world, BlockPos pos) {
+		Multimap<FluidContainer, Direction> result = HashMultimap.create();
+		List<Direction> dirs = new ArrayList<>(List.of(Direction.values()));
+		//dirs.add(null);
+		for (Direction dir : dirs) {
+			FluidContainer found = FluidContainer.LOOKUP.find(world, pos, dir);
+			if (found != null) {
+				result.put(found, dir);
 			}
 		}
-		if (provider.hasComponent(world, pos, FluidContainerComponent.TYPE, null)) {
-			dirs.add(null);
-		}
-		return dirs;
+		return result;
 	}
 
-	private static void printInformation(PlayerEntity player, FluidContainerComponent component) {
+	private static void printInformation(PlayerEntity player, FluidContainer component) {
 		ForcefieldFluid fluid = component.getContainedFluid();
 		if (fluid == null) {
-			player.sendMessage(new TranslatableText("item.funkyforcefields.gauge.fluidname").append(new TranslatableText("item.funkyforcefields.gauge.empty")));
-		} else {
-			player.sendMessage(new TranslatableText("item.funkyforcefields.gauge.fluidname").append(fluid.getFluidName()));
+			player.sendMessage(Text.translatable("item.funkyforcefields.gauge.fluidname").append(Text.translatable("item.funkyforcefields.gauge.empty")));
 		}
-		player.sendMessage(new TranslatableText("item.funkyforcefields.gauge.volume").append(Float.toString(component.getContainerVolume())));
-		player.sendMessage(new TranslatableText("item.funkyforcefields.gauge.thermal_diffusivity").append(Float.toString(component.getThermalDiffusivity())));
-		player.sendMessage(new TranslatableText("item.funkyforcefields.gauge.pressure").append(Float.toString(component.getPressure())));
-		player.sendMessage(new TranslatableText("item.funkyforcefields.gauge.temperature").append(Float.toString(component.getTemperature())));
+		else {
+			player.sendMessage(Text.translatable("item.funkyforcefields.gauge.fluidname").append(fluid.getFluidName()));
+		}
+		player.sendMessage(Text.translatable("item.funkyforcefields.gauge.volume").append(Float.toString(component.getContainerVolume())));
+		player.sendMessage(Text.translatable("item.funkyforcefields.gauge.thermal_diffusivity").append(Float.toString(component.getThermalDiffusivity())));
+		player.sendMessage(Text.translatable("item.funkyforcefields.gauge.pressure").append(Float.toString(component.getPressure())));
+		player.sendMessage(Text.translatable("item.funkyforcefields.gauge.temperature").append(Float.toString(component.getTemperature())));
 	}
 
 	private static void printDirectionList(PlayerEntity player, List<Direction> directions) {
-		if (directions.size() == 0 || (directions.size() == 1 && directions.get(0) == null)) {
+		if (directions.isEmpty() || (directions.size() == 1 && directions.get(0) == null)) {
 			return;
 		}
-		Text text = new LiteralText("");
+		MutableText text = Text.empty();
 		for (int i = 0; i < directions.size(); i++) {
-			switch (directions.get(i)) {
-				case NORTH:
-					text = text.append(new TranslatableText("item.funkyforcefields.gauge.north"));
-					break;
-				case EAST:
-					text = text.append(new TranslatableText("item.funkyforcefields.gauge.east"));
-					break;
-				case SOUTH:
-					text = text.append(new TranslatableText("item.funkyforcefields.gauge.south"));
-					break;
-				case WEST:
-					text = text.append(new TranslatableText("item.funkyforcefields.gauge.west"));
-					break;
-				case UP:
-					text = text.append(new TranslatableText("item.funkyforcefields.gauge.up"));
-					break;
-				case DOWN:
-					text = text.append(new TranslatableText("item.funkyforcefields.gauge.down"));
-					break;
-				default:
-					continue;
-			}
+			text = text.append(Text.translatable("item.funkyforcefields.gauge." + directions.get(i).asString()));
 			if (i < directions.size() - 1) {
 				text = text.append(",");
 			}
@@ -90,38 +72,22 @@ public class GaugeItem extends Item {
 		BlockState state = context.getWorld().getBlockState(pos);
 		Block block = state.getBlock();
 		PlayerEntity player = context.getPlayer();
-		if (player == null) {
+		if (player == null || FluidContainer.LOOKUP.getProvider(block) == null) {
 			return ActionResult.FAIL;
 		}
-		if (block instanceof BlockComponentProvider) {
-			if (context.getWorld().isClient()) {
-				return ActionResult.SUCCESS;
-			}
-			BlockComponentProvider provider = (BlockComponentProvider) block;
-			List<Direction> dirs = findValidDirections(provider, context.getWorld(), pos);
-			if (dirs.size() > 0) {
-				if (dirs.size() == 1) {
-					FluidContainerComponent component = provider.getComponent(context.getWorld(), pos, FluidContainerComponent.TYPE, dirs.get(0));
-					assert component != null;
-					printInformation(player, component);
-					return ActionResult.SUCCESS;
-				}
-				HashMap<FluidContainerComponent, List<Direction>> uniqueComponents = new HashMap<>();
-				for (Direction dir : dirs) {
-					Objects.requireNonNull(uniqueComponents.computeIfAbsent(provider.getComponent(context.getWorld(), pos, FluidContainerComponent.TYPE, dir), ignored -> new ArrayList<>())).add(dir);
-				}
-				if (uniqueComponents.size() == 1) {
-					printInformation(player, uniqueComponents.keySet().iterator().next());
-					return ActionResult.SUCCESS;
-				} else if (uniqueComponents.size() > 1) {
-					for (Map.Entry<FluidContainerComponent, List<Direction>> entry : uniqueComponents.entrySet()) {
-						printDirectionList(player, entry.getValue());
-						printInformation(player, entry.getKey());
-					}
-					return ActionResult.SUCCESS;
-				}
-			}
+		if (context.getWorld().isClient()) {
+			return ActionResult.SUCCESS;
 		}
-		return ActionResult.FAIL;
+		var dirs = findValidDirections(context.getWorld(), pos);
+		if (dirs.isEmpty()) {
+			return ActionResult.FAIL;
+		}
+		for (var entry : dirs.asMap().entrySet()) {
+			if (dirs.size() > 1) {
+				printDirectionList(player, entry.getValue().stream().toList());
+			}
+			printInformation(player, entry.getKey());
+		}
+		return ActionResult.SUCCESS;
 	}
 }

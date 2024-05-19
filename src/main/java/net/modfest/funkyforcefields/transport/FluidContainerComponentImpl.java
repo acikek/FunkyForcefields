@@ -1,124 +1,66 @@
 package net.modfest.funkyforcefields.transport;
 
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.math.Direction;
+import net.modfest.funkyforcefields.FunkyForcefields;
+import net.modfest.funkyforcefields.block.entity.LiquidInputHatchBlockEntity;
+import net.modfest.funkyforcefields.block.entity.PipeBlockEntity;
+import net.modfest.funkyforcefields.block.entity.PlasmaEjectorBlockEntity;
 import net.modfest.funkyforcefields.regions.ForcefieldFluid;
-import net.minecraft.nbt.CompoundTag;
 
-import java.util.Objects;
+public record FluidContainerComponentImpl(FluidContainerImpl container, BlockEntity entity) implements FluidContainerComponent {
 
-public class FluidContainerComponentImpl implements FluidContainerComponent {
-	final float containerVolume;
-	float pressure = TransportUtilities.NOMINAL_PRESSURE;
-	final float thermalDiffusivity;
-	float temperature = TransportUtilities.NOMINAL_TEMPERATURE;
-	ForcefieldFluid containedFluid;
-
-	public FluidContainerComponentImpl(float containerVolume, float thermalDiffusivity) {
-		this.containerVolume = containerVolume;
-		this.thermalDiffusivity = thermalDiffusivity;
+	@Override
+	public FluidContainer self() {
+		return container;
 	}
 
 	@Override
-	public float getContainerVolume() {
-		return containerVolume;
+	public FluidContainer dir(Direction dir) {
+		if (entity.getType() == FunkyForcefields.PIPE_BLOCK_ENTITY) {
+			return container;
+		}
+		else if (entity.getType() == FunkyForcefields.LIQUID_INPUT_HATCH_BLOCK_ENTITY) {
+			return dir == Direction.DOWN ? container : null;
+		}
+		if (entity instanceof PlasmaEjectorBlockEntity ejector) {
+			return ejector.exposesComponentTo(dir) ? container : null;
+		}
+		return container;
 	}
 
 	@Override
-	public float getPressure() {
-		return pressure;
-	}
-
-	public void setPressure(float pressure) {
-		this.pressure = pressure;
-	}
-
-	@Override
-	public float getThermalDiffusivity() {
-		return thermalDiffusivity;
-	}
-
-	@Override
-	public float getTemperature() {
-		return temperature;
-	}
-
-	public void setTemperature(float temperature) {
-		this.temperature = temperature;
-	}
-
-	@Override
-	public ForcefieldFluid getContainedFluid() {
-		return containedFluid;
-	}
-
-	public void setContainedFluid(ForcefieldFluid containedFluid) {
-		this.containedFluid = containedFluid;
-	}
-
-	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		pressure = compoundTag.getFloat("pressure");
-		temperature = compoundTag.getFloat("temperature");
-		if (compoundTag.getInt("containedFluid") != -1) {
-			containedFluid = ForcefieldFluid.REGISTRY.get(compoundTag.getInt("containedFluid"));
+	public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
+		container.setPressure(tag.getFloat("pressure"));
+		container.setTemperature(tag.getFloat("temperature"));
+		if (tag.getInt("containedFluid") != -1) {
+			container.setContainedFluid(ForcefieldFluid.REGISTRY.get(tag.getInt("containedFluid")));
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		compoundTag.putFloat("pressure", pressure);
-		compoundTag.putFloat("temperature", temperature);
-		if (containedFluid != null) {
-			compoundTag.putInt("containedFluid", ForcefieldFluid.REGISTRY.getRawId(containedFluid));
-		} else {
-			compoundTag.putInt("containedFluid", -1);
+	public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
+		tag.putFloat("pressure", container.getPressure());
+		tag.putFloat("temperature", container.getTemperature());
+		if (container.getContainedFluid() != null) {
+			tag.putInt("containedFluid", ForcefieldFluid.REGISTRY.getRawId(container.getContainedFluid()));
 		}
-		return compoundTag;
-	}
-
-	public void tick(FluidContainerComponent... neighbors) {
-		if (containedFluid == null) {
-			FluidContainerComponent biggestNeighbor = null;
-			for (FluidContainerComponent neighbor : neighbors) {
-				if (neighbor.getContainedFluid() != null) {
-					if (biggestNeighbor == null) {
-						biggestNeighbor = neighbor;
-					} else if (neighbor.getPressure() > biggestNeighbor.getPressure()) {
-						biggestNeighbor = neighbor;
-					}
-				}
-			}
-			if (biggestNeighbor != null && biggestNeighbor.getPressure() > pressure) {
-				containedFluid = biggestNeighbor.getContainedFluid();
-			}
-		}
-		float[] neighborValues = new float[neighbors.length];
-		for (int i = 0; i < neighbors.length; i++) {
-			neighborValues[i] = neighbors[i].getPressure();
-		}
-		pressure = TransportUtilities.tickPressure(containerVolume, pressure, neighborValues);
-		for (int i = 0; i < neighbors.length; i++) {
-			neighborValues[i] = neighbors[i].getTemperature();
-		}
-		temperature = TransportUtilities.tickTemperature(thermalDiffusivity, temperature, neighborValues);
-		if (Math.abs(pressure - TransportUtilities.NOMINAL_PRESSURE) <= TransportUtilities.NEGLIGIBILITY) {
-			containedFluid = null;
+		else {
+			tag.putInt("containedFluid", -1);
 		}
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		FluidContainerComponentImpl that = (FluidContainerComponentImpl) o;
-		return Float.compare(that.getContainerVolume(), getContainerVolume()) == 0 &&
-			Float.compare(that.getPressure(), getPressure()) == 0 &&
-			Float.compare(that.getThermalDiffusivity(), getThermalDiffusivity()) == 0 &&
-			Float.compare(that.getTemperature(), getTemperature()) == 0 &&
-			Objects.equals(getContainedFluid(), that.getContainedFluid());
+	public static FluidContainerComponentImpl forPipe(PipeBlockEntity blockEntity) {
+		return new FluidContainerComponentImpl(new FluidContainerImpl(6, 0.2f), blockEntity);
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(getContainerVolume(), getPressure(), getThermalDiffusivity(), getTemperature(), getContainedFluid());
+	public static FluidContainerComponentImpl forEjector(PlasmaEjectorBlockEntity blockEntity) {
+		return new FluidContainerComponentImpl(new FluidContainerImpl(0, 0.3f), blockEntity);
+	}
+
+	public static FluidContainerComponentImpl forInputHatch(LiquidInputHatchBlockEntity blockEntity) {
+		return new FluidContainerComponentImpl(new FluidContainerImpl(10, 0.2f), blockEntity);
 	}
 }

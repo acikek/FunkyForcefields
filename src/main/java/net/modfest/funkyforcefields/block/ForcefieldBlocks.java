@@ -1,12 +1,13 @@
 package net.modfest.funkyforcefields.block;
 
-import net.modfest.funkyforcefields.regions.ForcefieldFluid;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.modfest.funkyforcefields.regions.ForcefieldFluid;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class ForcefieldBlocks {
+
 	private static final List<ForcefieldFluid> registeredFluids = new ArrayList<>();
 	private static final Map<Class<? extends ForcefieldBlock>, Function<ForcefieldFluid, ? extends ForcefieldBlock>> blockGenerators = new HashMap<>();
 	private static final Map<ForcefieldFluid, Map<Class<? extends ForcefieldBlock>, ForcefieldBlock>> registeredBlocks = new HashMap<>();
@@ -46,17 +48,16 @@ public class ForcefieldBlocks {
 	public static void registerStandardBlockTypes() {
 		registerBlockType(fluid -> {
 			ForcefieldBlockVertical vfb = new ForcefieldBlockVertical(fluid);
-			Registry.register(Registry.BLOCK, appendIdentifier(fluid.getBaseIdentifier(), "_vertical"), vfb);
-			Registry.register(Registry.ITEM, appendIdentifier(fluid.getBaseIdentifier(), "_vertical"),
-				new BlockItem(vfb, new Item.Settings()));
+			Registry.register(Registries.BLOCK, appendIdentifier(fluid.getBaseIdentifier(), "_vertical"), vfb);
+			Registry.register(Registries.ITEM, appendIdentifier(fluid.getBaseIdentifier(), "_vertical"),
+					new BlockItem(vfb, new Item.Settings()));
 			return vfb;
 		}, ForcefieldBlockVertical.class);
-
 		registerBlockType(fluid -> {
 			ForcefieldBlockHorizontal vfb = new ForcefieldBlockHorizontal(fluid);
-			Registry.register(Registry.BLOCK, appendIdentifier(fluid.getBaseIdentifier(), "_horizontal"), vfb);
-			Registry.register(Registry.ITEM, appendIdentifier(fluid.getBaseIdentifier(), "_horizontal"),
-				new BlockItem(vfb, new Item.Settings()));
+			Registry.register(Registries.BLOCK, appendIdentifier(fluid.getBaseIdentifier(), "_horizontal"), vfb);
+			Registry.register(Registries.ITEM, appendIdentifier(fluid.getBaseIdentifier(), "_horizontal"),
+					new BlockItem(vfb, new Item.Settings()));
 			return vfb;
 		}, ForcefieldBlockHorizontal.class);
 	}

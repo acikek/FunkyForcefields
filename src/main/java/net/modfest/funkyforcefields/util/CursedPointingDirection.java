@@ -9,6 +9,7 @@ public enum CursedPointingDirection implements StringIdentifiable {
 	SIDEWAYS("sideways");
 
 	private final String name;
+
 	CursedPointingDirection(String name) {
 		this.name = name;
 	}
@@ -19,13 +20,10 @@ public enum CursedPointingDirection implements StringIdentifiable {
 	}
 
 	public static CursedPointingDirection of(Direction dir) {
-		switch (dir) {
-			case UP:
-				return CursedPointingDirection.UP;
-			case DOWN:
-				return CursedPointingDirection.DOWN;
-			default:
-				return CursedPointingDirection.SIDEWAYS;
-		}
+		return switch (dir) {
+			case UP -> CursedPointingDirection.UP;
+			case DOWN -> CursedPointingDirection.DOWN;
+			default -> CursedPointingDirection.SIDEWAYS;
+		};
 	}
 }

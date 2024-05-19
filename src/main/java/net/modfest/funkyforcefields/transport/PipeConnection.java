@@ -8,6 +8,7 @@ public enum PipeConnection implements StringIdentifiable {
 	BLOCK_CONNECTED("block_connected");
 
 	private final String name;
+
 	PipeConnection(String name) {
 		this.name = name;
 	}

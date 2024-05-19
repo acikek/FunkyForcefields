@@ -1,16 +1,18 @@
 package net.modfest.funkyforcefields.regions;
 
-import javax.annotation.Nullable;
-import net.modfest.funkyforcefields.block.ForcefieldBlock;
-import net.modfest.funkyforcefields.block.ForcefieldBlockHorizontal;
-import net.modfest.funkyforcefields.block.ForcefieldBlockVertical;
-import net.modfest.funkyforcefields.block.ForcefieldBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.modfest.funkyforcefields.block.ForcefieldBlock;
+import net.modfest.funkyforcefields.block.ForcefieldBlockHorizontal;
+import net.modfest.funkyforcefields.block.ForcefieldBlockVertical;
+import net.modfest.funkyforcefields.block.ForcefieldBlocks;
+
+import javax.annotation.Nullable;
 
 public class ForcefieldRegionLine extends ForcefieldRegion {
+
 	private final BlockPos origPos;
 	private final int length;
 	private final Direction dirExtension;
@@ -35,21 +37,21 @@ public class ForcefieldRegionLine extends ForcefieldRegion {
 	@Override
 	public boolean containsCoordinate(BlockPos pos) {
 		boolean flipped = dirExtension.getDirection() == Direction.AxisDirection.NEGATIVE;
-		switch (dirExtension.getAxis()) {
-			case X:
-				return pos.getY() == origPos.getY() && pos.getZ() == origPos.getZ() && bounded(pos.getX(), origPos.getX(), length, flipped);
-			case Y:
-				return pos.getX() == origPos.getX() && pos.getZ() == origPos.getZ() && bounded(pos.getY(), origPos.getY(), length, flipped);
-			case Z:
-				return pos.getY() == origPos.getY() && pos.getX() == origPos.getX() && bounded(pos.getZ(), origPos.getZ(), length, flipped);
-		}
-		return false;
+		return switch (dirExtension.getAxis()) {
+			case X ->
+					pos.getY() == origPos.getY() && pos.getZ() == origPos.getZ() && bounded(pos.getX(), origPos.getX(), length, flipped);
+			case Y ->
+					pos.getX() == origPos.getX() && pos.getZ() == origPos.getZ() && bounded(pos.getY(), origPos.getY(), length, flipped);
+			case Z ->
+					pos.getY() == origPos.getY() && pos.getX() == origPos.getX() && bounded(pos.getZ(), origPos.getZ(), length, flipped);
+		};
 	}
 
 	private BlockState getTheBlockStateOfThisForceFieldRegionLine() {
 		if (dirForcefield == Direction.UP) {
 			return ForcefieldBlocks.getBlock(forcefieldFluid, ForcefieldBlockHorizontal.class).getDefaultState();
-		} else {
+		}
+		else {
 			return ForcefieldBlocks.getBlock(forcefieldFluid, ForcefieldBlockVertical.class).getDefaultState().with(ForcefieldBlockVertical.FACING, dirForcefield);
 		}
 	}
@@ -58,7 +60,9 @@ public class ForcefieldRegionLine extends ForcefieldRegion {
 
 	@Override
 	public void placeBlocks(World world) {
-		if (placingBlocks) return;
+		if (placingBlocks) {
+			return;
+		}
 		placingBlocks = true;
 		for (int i = 1; i < length + 1; i++) {
 			BlockPos newPos = origPos.offset(dirExtension, i);
@@ -74,7 +78,8 @@ public class ForcefieldRegionLine extends ForcefieldRegion {
 	public boolean isValidBlock(@Nullable BlockState state) {
 		if (dirForcefield == Direction.UP) {
 			return state != null && state.getBlock() instanceof ForcefieldBlockHorizontal;
-		} else {
+		}
+		else {
 			return state != null && state.getBlock() instanceof ForcefieldBlockVertical && state.get(ForcefieldBlockVertical.FACING) == dirForcefield;
 		}
 	}
@@ -93,7 +98,8 @@ public class ForcefieldRegionLine extends ForcefieldRegion {
 				ForcefieldRegion region = manager.queryRegion(newPos);
 				if (region == null) {
 					world.removeBlock(newPos, false);
-				} else if (!region.isValidBlock(state)) {
+				}
+				else if (!region.isValidBlock(state)) {
 					region.revalidateBlock(world, newPos);
 				}
 			}

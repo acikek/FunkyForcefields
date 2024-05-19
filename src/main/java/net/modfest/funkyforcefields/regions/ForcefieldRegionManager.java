@@ -1,12 +1,13 @@
 package net.modfest.funkyforcefields.regions;
 
-import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.WeakHashMap;
 
 public class ForcefieldRegionManager {
+
 	private static final WeakHashMap<World, ForcefieldRegionManager> regionManagerMap = new WeakHashMap<>();
 	protected WeakHashMap<ForcefieldRegionHolder, ForcefieldRegion> regionMap = new WeakHashMap<>();
 

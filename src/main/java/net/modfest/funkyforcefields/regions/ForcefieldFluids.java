@@ -1,6 +1,5 @@
 package net.modfest.funkyforcefields.regions;
 
-import net.modfest.funkyforcefields.FunkyForcefields;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
@@ -8,21 +7,22 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
-
-import java.util.Random;
+import net.modfest.funkyforcefields.FunkyForcefields;
 
 public class ForcefieldFluids {
+
 	public static final ForcefieldFluid WATER = new ForcefieldFluid() {
+
 		@Override
 		public boolean allowsEntity(Entity ent) {
 			return ent instanceof ItemEntity;
@@ -30,14 +30,14 @@ public class ForcefieldFluids {
 
 		@Override
 		public void applyCollisionEffect(World world, BlockPos pos, Entity entity) {
-			if (!entity.isFireImmune() && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
-				entity.damage(DamageSource.IN_FIRE, 1.0f);
+			if (!entity.isFireImmune() && entity instanceof LivingEntity living && !EnchantmentHelper.hasFrostWalker(living)) {
+				entity.damage(world.getDamageSources().inFire(), 1.0f);
 			}
 		}
 
 		@Override
 		public Identifier getBaseIdentifier() {
-			return new Identifier(FunkyForcefields.MODID, "water_forcefield");
+			return FunkyForcefields.id("water_forcefield");
 		}
 
 		@Override
@@ -45,16 +45,16 @@ public class ForcefieldFluids {
 			Box box = shape.getBoundingBox();
 			for (int i = 0; i < 10; i++) {
 				world.addImportantParticle(ParticleTypes.CLOUD,
-					pos.getX() + box.x1 + (box.getXLength() * random.nextFloat()),
-					pos.getY() + box.y1 + (box.getYLength() * random.nextFloat()),
-					pos.getZ() + box.z1 + (box.getZLength() * random.nextFloat()),
-					0, 0, 0);
+						pos.getX() + box.minX + (box.getLengthX() * random.nextFloat()),
+						pos.getY() + box.minY + (box.getLengthY() * random.nextFloat()),
+						pos.getZ() + box.minZ + (box.getLengthZ() * random.nextFloat()),
+						0, 0, 0);
 			}
 		}
 
 		@Override
-		public TranslatableText getFluidName() {
-			return new TranslatableText("block.minecraft.water");
+		public Text getFluidName() {
+			return Text.translatable("block.minecraft.water");
 		}
 
 		@Override
@@ -69,6 +69,7 @@ public class ForcefieldFluids {
 	};
 
 	public static final ForcefieldFluid LAVA = new ForcefieldFluid() {
+
 		@Override
 		public boolean allowsEntity(Entity ent) {
 			return true;
@@ -78,38 +79,40 @@ public class ForcefieldFluids {
 		public void applyCollisionEffect(World world, BlockPos pos, Entity entity) {
 			// TODO: item smelting?
 			if (!entity.isFireImmune()) {
-				entity.damage(DamageSource.IN_FIRE, 5.0f);
+				entity.damage(world.getDamageSources().inFire(), 5.0f);
 			}
 		}
 
 		@Override
 		public Identifier getBaseIdentifier() {
-			return new Identifier(FunkyForcefields.MODID, "lava_forcefield");
+			return FunkyForcefields.id("lava_forcefield");
 		}
 
 		@Override
-		public TranslatableText getFluidName() {
-			return new TranslatableText("block.minecraft.lava");
+		public Text getFluidName() {
+			return Text.translatable("block.minecraft.lava");
 		}
 	};
 
 	public static final ForcefieldFluid GLASS = new ForcefieldFluid() {
+
 		@Override
 		public boolean allowsEntity(Entity ent) {
 			return false;
 		}
 
 		@Override
-		public void applyCollisionEffect(World world, BlockPos pos, Entity entity) {}
-
-		@Override
-		public Identifier getBaseIdentifier() {
-			return new Identifier(FunkyForcefields.MODID, "glass_forcefield");
+		public void applyCollisionEffect(World world, BlockPos pos, Entity entity) {
 		}
 
 		@Override
-		public TranslatableText getFluidName() {
-			return new TranslatableText("block.minecraft.glass");
+		public Identifier getBaseIdentifier() {
+			return FunkyForcefields.id("glass_forcefield");
+		}
+
+		@Override
+		public Text getFluidName() {
+			return Text.translatable("block.minecraft.glass");
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -120,6 +123,7 @@ public class ForcefieldFluids {
 	};
 
 	public static final ForcefieldFluid NETHER_PORTAL = new ForcefieldFluid() {
+
 		@Override
 		public boolean allowsEntity(Entity ent) {
 			return true;
@@ -134,16 +138,17 @@ public class ForcefieldFluids {
 
 		@Override
 		public Identifier getBaseIdentifier() {
-			return new Identifier(FunkyForcefields.MODID, "portal_forcefield");
+			return FunkyForcefields.id("portal_forcefield");
 		}
 
 		@Override
-		public TranslatableText getFluidName() {
-			return new TranslatableText("block.minecraft.nether_portal");
+		public Text getFluidName() {
+			return Text.translatable("block.minecraft.nether_portal");
 		}
 	};
 
 	public static final ForcefieldFluid FUNKY_GOO = new ForcefieldFluid() {
+
 		@Override
 		public boolean allowsEntity(Entity ent) {
 			return ent instanceof PlayerEntity;
@@ -152,26 +157,26 @@ public class ForcefieldFluids {
 		@Override
 		public void applyCollisionEffect(World world, BlockPos pos, Entity entity) {
 			if (!(entity instanceof PlayerEntity) && !entity.isFireImmune()) {
-				entity.damage(DamageSource.IN_FIRE, 5.0f);
+				entity.damage(world.getDamageSources().inFire(), 5.0f);
 			}
 		}
 
 		@Override
 		public Identifier getBaseIdentifier() {
-			return new Identifier(FunkyForcefields.MODID, "funky_goo_forcefield");
+			return FunkyForcefields.id("funky_goo_forcefield");
 		}
 
 		@Override
-		public TranslatableText getFluidName() {
-			return new TranslatableText("block.funkyforcefields.funky_goo");
+		public Text getFluidName() {
+			return Text.translatable("block.funkyforcefields.funky_goo");
 		}
 	};
 
 	public static void register() {
-		Registry.register(ForcefieldFluid.REGISTRY, new Identifier(FunkyForcefields.MODID, "water"), WATER);
-		Registry.register(ForcefieldFluid.REGISTRY, new Identifier(FunkyForcefields.MODID, "lava"), LAVA);
-		Registry.register(ForcefieldFluid.REGISTRY, new Identifier(FunkyForcefields.MODID, "glass"), GLASS);
-		Registry.register(ForcefieldFluid.REGISTRY, new Identifier(FunkyForcefields.MODID, "nether_portal"), NETHER_PORTAL);
-		Registry.register(ForcefieldFluid.REGISTRY, new Identifier(FunkyForcefields.MODID, "funky_goo"), FUNKY_GOO);
+		Registry.register(ForcefieldFluid.REGISTRY, FunkyForcefields.id("water"), WATER);
+		Registry.register(ForcefieldFluid.REGISTRY, FunkyForcefields.id("lava"), LAVA);
+		Registry.register(ForcefieldFluid.REGISTRY, FunkyForcefields.id("glass"), GLASS);
+		Registry.register(ForcefieldFluid.REGISTRY, FunkyForcefields.id("nether_portal"), NETHER_PORTAL);
+		Registry.register(ForcefieldFluid.REGISTRY, FunkyForcefields.id("funky_goo"), FUNKY_GOO);
 	}
 }
